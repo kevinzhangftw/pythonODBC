@@ -1,7 +1,7 @@
 import pymssql
 
 
-conn = pymssql.connect(host='leto.csil.sfu.ca', user='s_kwz', password='cdn289289', database='kwz354')
+conn = pymssql.connect(host='cypress.csil.sfu.ca', user='s_kwz', password='4YTdnH4gEGqnYJ2M', database='kwz354')
 
 cur = conn.cursor()
 
