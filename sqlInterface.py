@@ -8,12 +8,24 @@ def getMaxPassengerID():
     # row is tuple like this (99537,), so select only first element
     return row[0]
 
+def insertDB(passengerTuple):
+    # passenger_id = passengerTuple[0]
+    # first_name = passengerTuple[1]
+    # last_name = passengerTuple[2]
+    # miles = passengerTuple[3]
+    mycursor = conn.cursor()
+    mycursor.execute('insert into Passenger values (%d, %s, %s, %d)', passengerTuple)
+    conn.commit()
+
 def createProfile(firstname, lastname):
     passenger_id = getMaxPassengerID() + 1
     miles = 0
-    # INSERT ON Passenger first_name last_name passenger_id miles
+    passengerTuple = (passenger_id, firstname, lastname, miles)
+    insertDB(passengerTuple)
+    # i would write conditional to check insertion success or not, 
+    # but pymssql does not return such Bools 
     print("The profile for passenger {} {} {} was created.".format(passenger_id, firstname, lastname))
-
+    
 def findby(flight_code, depart_date):
     print("the “passenger_id”, “first_name”, “last_name” and “miles” for all the passengers for this flight instance,")
     print("how many seats are still available for this flight instance")
@@ -52,7 +64,7 @@ def addBooking(passenger_id):
 def main():
     global conn
     conn = pymssql.connect(host='cypress.csil.sfu.ca', user='s_kwz', password='4YTdnH4gEGqnYJ2M', database='kwz354')
-    createProfile("kai", "z")
+    createProfile("june", "kim")
 
 
 
