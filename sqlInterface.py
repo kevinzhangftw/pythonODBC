@@ -55,16 +55,14 @@ def addBooking(passenger_id):
     else:
         print("wrong input!")
 
-# Tests
-# createProfile("kai", "z")
-# findby(1,2)
-# addBooking(1234)
-
 # UI
 def main():
     global conn
     conn = pymssql.connect(host='cypress.csil.sfu.ca', user='s_kwz', password='4YTdnH4gEGqnYJ2M', database='kwz354')
-    createProfile("june", "kim")
+    # Tests
+    # createProfile("june", "kim")
+    findby(1,2)
+    # addBooking(1234)
 
 
 
