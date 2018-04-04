@@ -43,6 +43,7 @@ def findAvailableSeats(flight_code, depart_date):
     mycursor = conn.cursor()
     mycursor.execute('select available_seats from Flight_Instance where flight_code= (%s) and depart_date=(%s)', (flight_code, depart_date))
     row = mycursor.fetchone()
+    mycursor.close()
     return row[0]
 
 def addBooking(passenger_id):
