@@ -36,7 +36,14 @@ def findby(flight_code, depart_date):
         print(row[0], row[1], row[2], row[3])
         row = mycursor.fetchone()
     mycursor.close()
-    
+    print('=========================================')
+    print('The number of available seats for this flight instance:', findAvailableSeats(flight_code,depart_date))
+
+def findAvailableSeats(flight_code, depart_date):
+    mycursor = conn.cursor()
+    mycursor.execute('select available_seats from Flight_Instance where flight_code= (%s) and depart_date=(%s)', (flight_code, depart_date))
+    row = mycursor.fetchone()
+    return row[0]
 
 def addBooking(passenger_id):
     tripInput=input("is this a single trip or multi-city trip? enter “single” or “multi”")
@@ -70,6 +77,7 @@ def main():
     # Tests
     # createProfile("june", "kim")
     findby('JA100','2016/11/28')
+    # findAvailableSeats('JA100','2016/11/28')
     # addBooking(1234)
 
 
