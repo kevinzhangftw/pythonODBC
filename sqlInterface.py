@@ -77,10 +77,8 @@ def main():
     conn = pymssql.connect(host='cypress.csil.sfu.ca', user='s_kwz', password='4YTdnH4gEGqnYJ2M', database='kwz354')
     # Tests
     # createProfile("june", "kim")
-    findby('JA100','2016/11/28')
-    # findAvailableSeats('JA100','2016/11/28')
+    # findby('JA100','2016/11/28')
     # addBooking(1234)
-
 
 
 if __name__ == "__main__":
