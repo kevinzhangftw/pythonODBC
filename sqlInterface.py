@@ -57,41 +57,58 @@ def verifyFlightInstance(flight_code, depart_date):
         mycursor  = conn.cursor()
         mycursor.execute("SELECT F.flight_code, F.depart_date, F.available_seats FROM Flight_Instance F WHERE F.flight_code = %s AND F.depart_date = %s AND F.available_seats >= 1", (flight_code, depart_date))
         row = mycursor.fetchone()
-        print (row[0], row[1], row[2])
+        print (row[0], row[1], row[2])        
         mycursor.close()
         return True
     except:
         print('no such instance')
         return False
 
-def addBooking(passenger_id):
-    tripInput=input("is this a single trip or multi-city trip? enter “single” or “multi”")
-    if tripInput == 'single':
-        print("your chose single trip")
-        inputSpec = input("specify the flight_code and depart_date. For example: JA100 2016-11-28 ").split()
-        flight_code = inputSpec[0]
-        depart_date = inputSpec[1]
-        if verifyFlightInstance(flight_code, depart_date):
-            insertBooking(passenger_id, flight_code, depart_date)
+def verifyPassengerid(passenger_id):
+    try:
+        mycursor  = conn.cursor()
+        mycursor.execute("SELECT first_name, last_name FROM Passenger WHERE passenger_id = %d", passenger_id)
+        row = mycursor.fetchone()
+        print (row[0], row[1])
+        mycursor.close()
+        return True
+    except:
+        print('no such instance')
+        return False    
+
+def addBooking():
+    passenger_id = input('Please enter passenger id For example: 22050 >>')
+    if verifyPassengerid(passenger_id):
+        tripInput=input("is this a single trip or multi-city trip? enter “single” or “multi” >>")
+        if tripInput == 'single':
+            print("your chose single trip")
+            inputSpec = input("specify the flight_code and depart_date. For example: JA100 2016-11-28 ").split()
+            flight_code = inputSpec[0]
+            depart_date = inputSpec[1]
+            if verifyFlightInstance(flight_code, depart_date):
+                insertBooking(passenger_id, flight_code, depart_date)
+            else:
+                print ("Flight Instance Not found. Please try again")
+                addBooking(passenger_id)
+
+        elif tripInput == 'multi':
+            print("your chose multi trip")
+            inputSpec1 = input("specify your first flight_code and depart_date. For example: JA260 2016-11-29 ").split()
+            flight_code1 = inputSpec1[0]
+            depart_date1 = inputSpec1[1]
+            print("fligt_code1:", flight_code1)
+            print("depart_date1:", depart_date1)
+
+            inputSpec2 = input("specify your second flight_code and depart_date.  the “depart_date” of the second leg has to be no earlier than the “depart_date” of the first leg. For example: 12345 1990/11/03 ").split()
+            flight_code2 = inputSpec2[0]
+            depart_date2 = inputSpec2[1]
+            print("fligt_code2:", flight_code2)
+            print("depart_date2:", depart_date2)
         else:
-            print ("Flight Instance Not found. Please try again")
-            addBooking(passenger_id)
-
-    elif tripInput == 'multi':
-        print("your chose multi trip")
-        inputSpec1 = input("specify your first flight_code and depart_date. For example: JA260 2016-11-29 ").split()
-        flight_code1 = inputSpec1[0]
-        depart_date1 = inputSpec1[1]
-        print("fligt_code1:", flight_code1)
-        print("depart_date1:", depart_date1)
-
-        inputSpec2 = input("specify your second flight_code and depart_date.  the “depart_date” of the second leg has to be no earlier than the “depart_date” of the first leg. For example: 12345 1990/11/03 ").split()
-        flight_code2 = inputSpec2[0]
-        depart_date2 = inputSpec2[1]
-        print("fligt_code2:", flight_code2)
-        print("depart_date2:", depart_date2)
+            print("wrong input!")
     else:
-        print("wrong input!")
+        print('No such passenger found! please try again')
+        addBooking()
 
 def viewPassengers():
     inputSpec = input("specify the flight_code and depart_date. For example: JA100 2016-11-28 ").split()
@@ -111,7 +128,8 @@ def main():
     # createProfile("june", "kim")
     # viewPassengers()
     # findby('JA300','2016/11/28')
-    # addBooking(22050)
+    # addBooking()
+    verifyPassengerid(22050)
     # verifyFlightInstance('JA100','2017-11-28')
     
 
