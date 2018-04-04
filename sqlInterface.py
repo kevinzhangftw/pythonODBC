@@ -17,6 +17,12 @@ def insertPassengerToDB(passengerTuple):
     mycursor.execute('insert into Passenger values (%d, %s, %s, %d)', passengerTuple)
     conn.commit()
 
+def insertBooking(passenger_id, flight_code, depart_date):
+    mycursor = conn.cursor()
+    mycursor.execute('insert into Booking values (%s, %s, %d)', (flight_code,depart_date,passenger_id))
+    conn.commit()
+    print('Booking has been successfully inserted into database')
+
 def createProfile(firstname, lastname):
     passenger_id = getMaxPassengerID() + 1
     miles = 0
@@ -46,18 +52,34 @@ def findAvailableSeats(flight_code, depart_date):
     mycursor.close()
     return row[0]
 
+def verifyFlightInstance(flight_code, depart_date):
+    try:
+        mycursor  = conn.cursor()
+        mycursor.execute("SELECT F.flight_code, F.depart_date, F.available_seats FROM Flight_Instance F WHERE F.flight_code = %s AND F.depart_date = %s AND F.available_seats >= 1", (flight_code, depart_date))
+        row = mycursor.fetchone()
+        print (row[0], row[1], row[2])
+        mycursor.close()
+        return True
+    except:
+        print('no such instance')
+        return False
+
 def addBooking(passenger_id):
     tripInput=input("is this a single trip or multi-city trip? enter “single” or “multi”")
     if tripInput == 'single':
         print("your chose single trip")
-        inputSpec = input("specify the flight_code and depart_date. For example: 12345 1990/11/03 ").split()
+        inputSpec = input("specify the flight_code and depart_date. For example: JA100 2016-11-28 ").split()
         flight_code = inputSpec[0]
         depart_date = inputSpec[1]
-        print("fligt_code:", flight_code)
-        print("depart_date:", depart_date)
+        if verifyFlightInstance(flight_code, depart_date):
+            insertBooking(passenger_id, flight_code, depart_date)
+        else:
+            print ("Flight Instance Not found. Please try again")
+            addBooking(passenger_id)
+
     elif tripInput == 'multi':
         print("your chose multi trip")
-        inputSpec1 = input("specify your first flight_code and depart_date. For example: 12345 1990/11/03 ").split()
+        inputSpec1 = input("specify your first flight_code and depart_date. For example: JA260 2016-11-29 ").split()
         flight_code1 = inputSpec1[0]
         depart_date1 = inputSpec1[1]
         print("fligt_code1:", flight_code1)
@@ -78,8 +100,9 @@ def main():
     # Tests
     # createProfile("june", "kim")
     # findby('JA100','2016/11/28')
-    # addBooking(1234)
-
+    addBooking(22050)
+    # verifyFlightInstance('JA100','2017-11-28')
+    
 
 if __name__ == "__main__":
     main()
