@@ -93,14 +93,25 @@ def addBooking(passenger_id):
     else:
         print("wrong input!")
 
+def viewPassengers():
+    inputSpec = input("specify the flight_code and depart_date. For example: JA100 2016-11-28 ").split()
+    flight_code = inputSpec[0]
+    depart_date = inputSpec[1]
+    if verifyFlightInstance(flight_code, depart_date):
+        findby(flight_code, depart_date)
+    else:
+        print('Flight_Instance not found, please try again')
+        viewPassengers()
+
 # UI
 def main():
     global conn
     conn = pymssql.connect(host='cypress.csil.sfu.ca', user='s_kwz', password='4YTdnH4gEGqnYJ2M', database='kwz354')
     # Tests
     # createProfile("june", "kim")
-    # findby('JA100','2016/11/28')
-    addBooking(22050)
+    # viewPassengers()
+    # findby('JA300','2016/11/28')
+    # addBooking(22050)
     # verifyFlightInstance('JA100','2017-11-28')
     
 
