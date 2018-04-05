@@ -60,11 +60,17 @@ def findAvailableSeats(flight_code, depart_date):
 def verifyFlightInstance(flight_code, depart_date):
     try:
         mycursor  = conn.cursor()
-        mycursor.execute("SELECT F.flight_code, F.depart_date, F.available_seats FROM Flight_Instance F WHERE F.flight_code = %s AND F.depart_date = %s AND F.available_seats >= 1", (flight_code, depart_date))
+        mycursor.execute("SELECT F.flight_code, F.depart_date, F.available_seats FROM Flight_Instance F WHERE F.flight_code = %s AND F.depart_date = %s", (flight_code, depart_date))
         row = mycursor.fetchone()
-        print (row[0], row[1], row[2])        
+        print (row[0], row[1], row[2])
+        available_seats = row[2]
         mycursor.close()
-        return True
+        if available_seats>0:
+            print('number of available_seats:', available_seats)
+            return True
+        else:
+            print('no seats available, the tickets are sold out for this flight')
+            return False            
     except:
         print('no such instance')
         return False
@@ -143,9 +149,9 @@ def main():
     # createProfile("june", "kim")
     # viewPassengers()
     # findby('JA300','2016/11/28')
-    addBooking()
+    # addBooking()
     # verifyPassengerid(22050)
-    # verifyFlightInstance('JA100','2016-11-28')
+    verifyFlightInstance('JA100','2016-11-28')
     
 
 if __name__ == "__main__":
