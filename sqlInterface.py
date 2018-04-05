@@ -1,4 +1,5 @@
 import pymssql
+from datetime import datetime
 
 def getMaxPassengerID():
     mycursor = conn.cursor()
@@ -106,14 +107,24 @@ def processMultiTrip(passenger_id):
     inputSpec1 = input("specify your first flight_code and depart_date. For example: JA260 2016-11-29 >> ").split()
     flight_code1 = inputSpec1[0]
     depart_date1 = inputSpec1[1]
-    print("fligt_code1:", flight_code1)
-    print("depart_date1:", depart_date1)
-
-    inputSpec2 = input("specify your second flight_code and depart_date.  the “depart_date” of the second leg has to be no earlier than the “depart_date” of the first leg. For example: 12345 1990/11/03 ").split()
+    try:
+        date1 = datetime.strptime(depart_date1,'%Y-%m-%d')
+    except:
+        date1 = datetime.strptime(depart_date1,'%Y/%m/%d')
+    
+    inputSpec2 = input("specify your second flight_code and depart_date. For example: JA260 2016-11-29 >> ").split()
     flight_code2 = inputSpec2[0]
     depart_date2 = inputSpec2[1]
-    print("fligt_code2:", flight_code2)
-    print("depart_date2:", depart_date2)
+    try:
+        date2 = datetime.strptime(depart_date2,'%Y-%m-%d')
+    except:
+        date2 = datetime.strptime(depart_date2,'%Y/%m/%d')
+
+    if depart_date1>=depart_date2:
+        print('DATE ENTRY ERROR: depart_date for the second leg must be later than first depart_date')
+        processMultiTrip(passenger_id)
+    else:
+        print('proceed')
 
 
 def addBooking():
@@ -149,9 +160,9 @@ def main():
     # createProfile("june", "kim")
     # viewPassengers()
     # findby('JA300','2016/11/28')
-    # addBooking()
+    addBooking()
     # verifyPassengerid(22050)
-    verifyFlightInstance('JA100','2016-11-28')
+    # verifyFlightInstance('JA100','2016-11-28')
     
 
 if __name__ == "__main__":
