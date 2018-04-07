@@ -14,19 +14,24 @@ def insertPassengerToDB(passengerTuple):
     # first_name = passengerTuple[1]
     # last_name = passengerTuple[2]
     # miles = passengerTuple[3]
-    mycursor = conn.cursor()
-    mycursor.execute('insert into Passenger values (%d, %s, %s, %d)', passengerTuple)
-    conn.commit()
+    try:
+        mycursor = conn.cursor()
+        mycursor.execute('insert into Passenger values (%d, %s, %s, %d)', passengerTuple)
+        conn.commit()
+        return True
+    except:
+        print('insertion failed, passenger already exists')
+        return False
 
 def insertBooking(passenger_id, flight_code, depart_date):
     mycursor = conn.cursor()
     try:
         mycursor.execute('insert into Booking values (%s, %s, %d)', (flight_code,depart_date,passenger_id))
         conn.commit()
-        print('Booking has been successfully inserted into database')
         return True
-    except:
+    except Exception as e:
         print('Insertion Failed: Possible Duplicate Insertion')
+        print("type error: " + str(e))
         return False
 
 def insertBookingNoCommit(passenger_id, flight_code, depart_date):
@@ -40,15 +45,23 @@ def insertBookingNoCommit(passenger_id, flight_code, depart_date):
         print('Insertion Failed: Possible Duplicate Insertion')
         return False
 
-def createProfile(firstname, lastname):
+def createProfile():
+    userInput = input('please enter your first name and last name. >> ').split()
+    firstname = userInput[0]
+    lastname = userInput[1]
+    insertPassenger(firstname, lastname)
+    appEntry()
+    
+
+def insertPassenger(firstname, lastname):
     passenger_id = getMaxPassengerID() + 1
     miles = 0
     passengerTuple = (passenger_id, firstname, lastname, miles)
-    insertPassengerToDB(passengerTuple)
-    # i would write conditional to check insertion success or not, 
-    # but pymssql does not return such Bools 
-    print("The profile for passenger {} {} {} was created.".format(passenger_id, firstname, lastname))
-    
+    if insertPassengerToDB(passengerTuple):
+        print("The profile for passenger {} {} {} was created.".format(passenger_id, firstname, lastname))
+    else:
+        appEntry()
+
 def findby(flight_code, depart_date):
     mycursor = conn.cursor()
     mycursor.execute('select Passenger.passenger_id, first_name, last_name, miles from Booking, Passenger where flight_code= (%s) and depart_date=(%s) and Booking.passenger_id = Passenger.passenger_id', (flight_code, depart_date))
@@ -78,10 +91,8 @@ def verifyFlightInstance(flight_code, depart_date):
         available_seats = row[2]
         mycursor.close()
         if available_seats>0:
-            # print('number of available_seats:', available_seats)
             return True
         else:
-            # print('no seats available, the tickets are sold out for this flight')
             return False            
     except:
         return False
@@ -103,8 +114,10 @@ def processSingleTrip(passenger_id):
     flight_code = inputSpec[0]
     depart_date = inputSpec[1]
     if verifyFlightInstance(flight_code, depart_date):
+        print('flight instance verified, begin insertion')
         if insertBooking(passenger_id, flight_code, depart_date):
             print('Booking has been successfully added to database')
+            appEntry()
         else:
             processSingleTrip(passenger_id)
     else:
@@ -143,6 +156,7 @@ def processMultiTrip(passenger_id):
                 print('Flight Instances successfully inserted')
             except:
                 print('Error: Multitrip Insertion Error, Insertion rollback. check Flight_Instances')
+            appEntry()
         else:
             print("Error: One or Both Flight Instances are Not found. try again")
             processMultiTrip(passenger_id)
@@ -188,23 +202,30 @@ def viewPassengers():
     depart_date = inputSpec[1]
     if verifyFlightInstance(flight_code, depart_date):
         findby(flight_code, depart_date)
-        printAvailableSeats(flight_code, depart_date)
+        appEntry()
     else:
         print('Flight_Instance not found, please try again')
         viewPassengers()
 
 # UI
+def appEntry():
+    userInput = input('please select the following options: create profile, view passengers, or add booking >> ')
+    if userInput == 'create profile':
+        createProfile()
+    elif userInput == 'view passengers':
+        viewPassengers()
+    elif userInput == 'add booking':
+        addBooking()
+    else:
+        print('umm..we didnt find any matched options. you can say: create profile OR view passengers OR add booking')
+        appEntry()
+
+
 def main():
     global conn
     conn = pymssql.connect(host='cypress.csil.sfu.ca', user='s_kwz', password='4YTdnH4gEGqnYJ2M', database='kwz354')
-    # Tests
-    # createProfile("june", "kim")
-    # viewPassengers()
-    # findby('JA300','2016/11/28')
-    addBooking()
-    # verifyPassengerid(22050)
-    # verifyFlightInstance('JA100','2016-11-28')
-    
+    print('Welcome to manage your flight app!')
+    appEntry()
 
 if __name__ == "__main__":
     main()
