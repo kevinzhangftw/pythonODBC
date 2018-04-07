@@ -29,6 +29,17 @@ def insertBooking(passenger_id, flight_code, depart_date):
         print('Insertion Failed: Possible Duplicate Insertion')
         return False
 
+def insertBookingNoCommit(passenger_id, flight_code, depart_date):
+    mycursor = conn.cursor()
+    try:
+        mycursor.execute('insert into Booking values (%s, %s, %d)', (flight_code,depart_date,passenger_id))
+        # conn.commit()
+        print('Booking has been successfully inserted into database')
+        return True
+    except:
+        print('Insertion Failed: Possible Duplicate Insertion')
+        return False
+
 def createProfile(firstname, lastname):
     passenger_id = getMaxPassengerID() + 1
     miles = 0
@@ -67,13 +78,12 @@ def verifyFlightInstance(flight_code, depart_date):
         available_seats = row[2]
         mycursor.close()
         if available_seats>0:
-            print('number of available_seats:', available_seats)
+            # print('number of available_seats:', available_seats)
             return True
         else:
-            print('no seats available, the tickets are sold out for this flight')
+            # print('no seats available, the tickets are sold out for this flight')
             return False            
     except:
-        print('no such instance')
         return False
 
 def verifyPassengerid(passenger_id):
@@ -85,7 +95,6 @@ def verifyPassengerid(passenger_id):
         mycursor.close()
         return True
     except:
-        print('no such instance')
         return False  
 
 def processSingleTrip(passenger_id):
@@ -124,7 +133,19 @@ def processMultiTrip(passenger_id):
         print('DATE ENTRY ERROR: depart_date for the second leg must be later than first depart_date')
         processMultiTrip(passenger_id)
     else:
-        print('proceed')
+        print('depart dates verified, checking flight instance...')
+        if verifyFlightInstance(flight_code1, depart_date1) and verifyFlightInstance(flight_code2, depart_date2):
+            print('both flight instances verified, begin insertion')
+            try:
+                insertBookingNoCommit(passenger_id, flight_code1, depart_date1)
+                insertBookingNoCommit(passenger_id, flight_code2, depart_date2)
+                conn.commit()
+                print('Flight Instances successfully inserted')
+            except:
+                print('Error: Multitrip Insertion Error, Insertion rollback. check Flight_Instances')
+        else:
+            print("Error: One or Both Flight Instances are Not found. try again")
+            processMultiTrip(passenger_id)
 
 
 def addBooking():
@@ -142,12 +163,32 @@ def addBooking():
         print('No such passenger found! please try again')
         addBooking()
 
+def printAvailableSeats(flight_code, depart_date):
+    try:
+        mycursor  = conn.cursor()
+        mycursor.execute("SELECT F.flight_code, F.depart_date, F.available_seats FROM Flight_Instance F WHERE F.flight_code = %s AND F.depart_date = %s", (flight_code, depart_date))
+        row = mycursor.fetchone()
+        print (row[0], row[1], row[2])
+        available_seats = row[2]
+        mycursor.close()
+        if available_seats>0:
+            print('number of available_seats:', available_seats)
+            return True
+        else:
+            print('no seats available, the tickets are sold out for this flight')
+            return False            
+    except:
+        return False
+
+
+
 def viewPassengers():
     inputSpec = input("specify the flight_code and depart_date. For example: JA100 2016-11-28 ").split()
     flight_code = inputSpec[0]
     depart_date = inputSpec[1]
     if verifyFlightInstance(flight_code, depart_date):
         findby(flight_code, depart_date)
+        printAvailableSeats(flight_code, depart_date)
     else:
         print('Flight_Instance not found, please try again')
         viewPassengers()
