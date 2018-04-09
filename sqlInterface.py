@@ -31,7 +31,7 @@ def insertBooking(passenger_id, flight_code, depart_date):
         return True
     except Exception as e:
         print('Insertion Failed: Possible Duplicate Insertion')
-        print("type error: " + str(e))
+        # print("type error: " + str(e))
         return False
 
 def insertBookingNoCommit(passenger_id, flight_code, depart_date):
@@ -173,6 +173,7 @@ def addBooking():
             processMultiTrip(passenger_id)
         else:
             print("wrong input!")
+            addBooking()
     else:
         print('No such passenger found! please try again')
         addBooking()
