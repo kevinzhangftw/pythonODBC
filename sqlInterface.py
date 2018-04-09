@@ -1,3 +1,4 @@
+#!python3
 import pymssql
 from datetime import datetime
 
