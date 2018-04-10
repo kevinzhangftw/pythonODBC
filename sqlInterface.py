@@ -1,5 +1,6 @@
 #!python3
 import pymssql
+import pyodbc
 from datetime import datetime
 
 def getMaxPassengerID():
@@ -225,7 +226,9 @@ def appEntry():
 
 def main():
     global conn
-    conn = pymssql.connect(host='cypress.csil.sfu.ca', user='s_kwz', password='4YTdnH4gEGqnYJ2M', database='kwz354')
+    # conn = pymssql.connect(host='cypress.csil.sfu.ca', user='s_kwz', password='4YTdnH4gEGqnYJ2M', database='kwz354')
+    conn = pyodbc.connect('driver={SQL Server};server=cypress.csil.sfu.ca;uid=s_kwz;pwd=4YTdnH4gEGqnYJ2M')
+
     print('Welcome to manage your flight app!')
     appEntry()
 
