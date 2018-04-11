@@ -18,7 +18,10 @@ def insertPassengerToDB(passengerTuple):
     # miles = passengerTuple[3]
     try:
         mycursor = conn.cursor()
-        mycursor.execute('insert into Passenger values (%d, %s, %s, %d)', passengerTuple)
+        # pymssql
+        # mycursor.execute('insert into Passenger values (%d, %s, %s, %d)', passengerTuple)
+        # pyodbc
+        mycursor.execute('insert into Passenger values (?,?,?,?)', passengerTuple)
         conn.commit()
         return True
     except:
@@ -28,7 +31,10 @@ def insertPassengerToDB(passengerTuple):
 def insertBooking(passenger_id, flight_code, depart_date):
     mycursor = conn.cursor()
     try:
-        mycursor.execute('insert into Booking values (%s, %s, %d)', (flight_code,depart_date,passenger_id))
+        # pymssql
+        # mycursor.execute('insert into Booking values (%s, %s, %d)', (flight_code,depart_date,passenger_id))
+        # pyodbc
+        mycursor.execute('insert into Booking values (?, ?, ?)', (flight_code,depart_date,passenger_id))
         conn.commit()
         return True
     except Exception as e:
@@ -39,7 +45,10 @@ def insertBooking(passenger_id, flight_code, depart_date):
 def insertBookingNoCommit(passenger_id, flight_code, depart_date):
     mycursor = conn.cursor()
     try:
-        mycursor.execute('insert into Booking values (%s, %s, %d)', (flight_code,depart_date,passenger_id))
+        # pymssql
+        # mycursor.execute('insert into Booking values (%s, %s, %d)', (flight_code,depart_date,passenger_id))
+        # pyodbc
+        mycursor.execute('insert into Booking values (?, ?, ?)', (flight_code,depart_date,passenger_id))
         # conn.commit()
         print('Booking has been successfully inserted into database')
         return True
@@ -66,7 +75,10 @@ def insertPassenger(firstname, lastname):
 
 def findby(flight_code, depart_date):
     mycursor = conn.cursor()
-    mycursor.execute('select Passenger.passenger_id, first_name, last_name, miles from Booking, Passenger where flight_code= (%s) and depart_date=(%s) and Booking.passenger_id = Passenger.passenger_id', (flight_code, depart_date))
+    # pymssql
+    # mycursor.execute('select Passenger.passenger_id, first_name, last_name, miles from Booking, Passenger where flight_code= (%s) and depart_date=(%s) and Booking.passenger_id = Passenger.passenger_id', (flight_code, depart_date))
+    # pyodbc
+    mycursor.execute('select Passenger.passenger_id, first_name, last_name, miles from Booking, Passenger where flight_code=? and depart_date=? and Booking.passenger_id = Passenger.passenger_id', (flight_code, depart_date))
     row = mycursor.fetchone()
     print('==========Returning All Passengers with This Flight Instance==========')
     print('passenger_id first_name   last_name             miles')
@@ -79,7 +91,10 @@ def findby(flight_code, depart_date):
 
 def findAvailableSeats(flight_code, depart_date):
     mycursor = conn.cursor()
-    mycursor.execute('select available_seats from Flight_Instance where flight_code= (%s) and depart_date=(%s)', (flight_code, depart_date))
+    # pymssql
+    # mycursor.execute('select available_seats from Flight_Instance where flight_code= (%s) and depart_date=(%s)', (flight_code, depart_date))
+    # pyodbc
+    mycursor.execute('select available_seats from Flight_Instance where flight_code=? and depart_date=?', (flight_code, depart_date))
     row = mycursor.fetchone()
     mycursor.close()
     return row[0]
@@ -87,7 +102,10 @@ def findAvailableSeats(flight_code, depart_date):
 def verifyFlightInstance(flight_code, depart_date):
     try:
         mycursor  = conn.cursor()
-        mycursor.execute("SELECT F.flight_code, F.depart_date, F.available_seats FROM Flight_Instance F WHERE F.flight_code = %s AND F.depart_date = %s", (flight_code, depart_date))
+        # pymssql
+        # mycursor.execute("SELECT F.flight_code, F.depart_date, F.available_seats FROM Flight_Instance F WHERE F.flight_code = %s AND F.depart_date = %s", (flight_code, depart_date))
+        # pyodbc
+        mycursor.execute("SELECT F.flight_code, F.depart_date, F.available_seats FROM Flight_Instance F WHERE F.flight_code =? AND F.depart_date =?", (flight_code, depart_date))
         row = mycursor.fetchone()
         print (row[0], row[1], row[2])
         available_seats = row[2]
@@ -102,7 +120,10 @@ def verifyFlightInstance(flight_code, depart_date):
 def verifyPassengerid(passenger_id):
     try:
         mycursor  = conn.cursor()
-        mycursor.execute("SELECT first_name, last_name FROM Passenger WHERE passenger_id = %d", passenger_id)
+        # pymssql
+        # mycursor.execute("SELECT first_name, last_name FROM Passenger WHERE passenger_id = %d", passenger_id)
+        # pyodbc
+        mycursor.execute("SELECT first_name, last_name FROM Passenger WHERE passenger_id =?", passenger_id)
         row = mycursor.fetchone()
         print ('Adding Booking for :', row[0], row[1])
         mycursor.close()
@@ -183,7 +204,10 @@ def addBooking():
 def printAvailableSeats(flight_code, depart_date):
     try:
         mycursor  = conn.cursor()
-        mycursor.execute("SELECT F.flight_code, F.depart_date, F.available_seats FROM Flight_Instance F WHERE F.flight_code = %s AND F.depart_date = %s", (flight_code, depart_date))
+        # pymssql
+        # mycursor.execute("SELECT F.flight_code, F.depart_date, F.available_seats FROM Flight_Instance F WHERE F.flight_code = %s AND F.depart_date = %s", (flight_code, depart_date))
+        # pyodbc
+        mycursor.execute("SELECT F.flight_code, F.depart_date, F.available_seats FROM Flight_Instance F WHERE F.flight_code =? AND F.depart_date =?", (flight_code, depart_date))
         row = mycursor.fetchone()
         print (row[0], row[1], row[2])
         available_seats = row[2]
@@ -196,8 +220,6 @@ def printAvailableSeats(flight_code, depart_date):
             return False            
     except:
         return False
-
-
 
 def viewPassengers():
     inputSpec = input("specify the flight_code and depart_date. For example: JA100 2016-11-28 ").split()

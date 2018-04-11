@@ -1,6 +1,13 @@
 import pyodbc
 
-conn = pyodbc.connect('driver={SQL Server};server=cypress.csil.sfu.ca;uid=s_kwz;pwd=4YTdnH4gEGqnYJ2M')
+server = 'cypress.csil.sfu.ca'
+database = 'kwz354'
+username = 's_kwz'
+password = '4YTdnH4gEGqnYJ2M'
+cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+
+
+# conn = pyodbc.connect('driver={SQL Server};server=cypress.csil.sfu.ca;uid=s_kwz;pwd=4YTdnH4gEGqnYJ2M')
 #  ^^^ 2 values must be change for your own program.
 
 #  Since the CSIL SQL Server has configured a default database for each user, there is no need to specify it (<username>354)
