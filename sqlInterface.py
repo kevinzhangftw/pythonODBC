@@ -1,5 +1,5 @@
 #!python3
-import pymssql
+# import pymssql
 import pyodbc
 from datetime import datetime
 
@@ -227,7 +227,9 @@ def appEntry():
 def main():
     global conn
     # conn = pymssql.connect(host='cypress.csil.sfu.ca', user='s_kwz', password='4YTdnH4gEGqnYJ2M', database='kwz354')
-    conn = pyodbc.connect('driver={SQL Server};server=cypress.csil.sfu.ca;uid=s_kwz;pwd=4YTdnH4gEGqnYJ2M')
+    # conn = pyodbc.connect('driver={SQL Server};server=cypress.csil.sfu.ca;uid=s_kwz;pwd=4YTdnH4gEGqnYJ2M')
+    conn = pyodbc.connect('driver={SQL Server};Server=cypress.csil.sfu.ca;Trusted_Connection=yes;')
+    # windows csil connection only'
 
     print('Welcome to manage your flight app!')
     appEntry()
