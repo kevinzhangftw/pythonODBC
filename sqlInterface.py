@@ -176,7 +176,6 @@ def processMultiTrip(passenger_id):
                 insertBookingNoCommit(passenger_id, flight_code1, depart_date1)
                 insertBookingNoCommit(passenger_id, flight_code2, depart_date2)
                 conn.commit()
-                print('Flight Instances successfully inserted')
             except:
                 print('Error: Multitrip Insertion Error, Insertion rollback. check Flight_Instances')
             appEntry()
